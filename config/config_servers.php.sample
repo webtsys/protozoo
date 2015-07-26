@@ -1,0 +1,13 @@
+<?php
+
+ConfigPanel::$servers['host.name.com']=array('os_codename' => 'debian_jessie');
+
+ConfigPanel::$password_key='';
+
+ConfigPanel::$user_ssh='spanel';
+
+ConfigPanel::$home_ssh='/home/spanel';
+
+ConfigPanel::$server_tmp=ConfigPanel::$home_ssh.'/tmp';
+
+?>

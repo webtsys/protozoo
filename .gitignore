@@ -1,0 +1,6 @@
+*~
+config/*
+!config/config_servers.php.sample
+!config/config_parameters_agent.php.sample
+logs/*
+

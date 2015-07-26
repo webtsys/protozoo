@@ -1,0 +1,7 @@
+<?php
+
+ConfigPanel::$scripts['agent']['mariadb']['parameters']=array('--password=sirena');
+
+ConfigPanel::$scripts['agent']['php']['parameters']=array('--conf_to_copy=/home/spanel/tmp/spanel.conf');
+
+?>
