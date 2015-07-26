@@ -14,6 +14,10 @@ ConfigPanel::$scripts['agent']['git']=array('name' => 'Git', 'description' => 'A
 
 ConfigPanel::$scripts['agent']['composer']=array('name' => 'Composer', 'description' => 'A package manager for php', 'script_path' => 'libraries/install_composer.sh', 'script_interpreter' => 'sh');
 
+//Install agents that are basic scripts. The basic scripts are mysql and php websites servers.
+
+//More scripts can be add_servers for add the servers created to a mysql database.
+
 /*ConfigPanel::$scripts['agent']['agent']=array('name' => 'WPanel agent', 'description' => 'API used by the hosting control panel made with Phango Framework and python scripts', 'script_path' => 'agent/install_agent.sh', 'script_command' => 'sh install_agent.sh', 'parameters' => '--hostname_father=', 'extra_files' => 'webserver/agent.conf');*/
 
 ?>
