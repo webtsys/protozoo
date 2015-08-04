@@ -141,6 +141,8 @@ function LaunchConsole()
 	
 	check_process_wait($arr_process, $count_p, $climate);
 	
+	$climate->white()->backgroundLightBlue()->out("Tasks on all servers were finished!!");
+	
 	/*if($z>0)
 	{
 	
@@ -367,6 +369,8 @@ function exec_tasks($options, $host, $data_host, $key, $climate)
 			
 		}
 		
+		ConfigPanel::$logger->addInfo("Files were uploaded succesfully");
+		
 		$total_count=100;
 		
 		//$progress->current($total_count);
@@ -472,7 +476,7 @@ function check_process_free($arr_process, $count_p)
 
 function check_process_wait($arr_process, $p_count, $climate)
 {
-
+	
 	foreach($arr_process as $pid => $host)
 	{
 	

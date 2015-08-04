@@ -1,8 +1,10 @@
 <?php
 
 class ConfigPanel {
-
-	static public $ssh_instances=10;
+	
+	/**
+	* Array where info from servers is saved
+	*/
 	
 	static public $servers=array();
 	
@@ -28,7 +30,15 @@ class ConfigPanel {
 	
 	static public $logger;
 	
+	static public $ssh_instances=10;
+	
+	//Variables for internal tasks
+	
 	static public $exit_if_error=false;
+	
+	static public $num_errors=0;
+	
+	static public $progress;
 
 }
 
