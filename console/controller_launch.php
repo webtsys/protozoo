@@ -60,6 +60,33 @@ function LaunchConsole()
 	
 	Utils::load_config('spanel', $config_name);
 	
+	//Paths for task
+	
+	$task_base_path=ConfigPanel::$base_path.'/tasks';
+	
+	$task_path=$task_base_path.'/'.$options['task'];
+	
+	if(!Utils::load_libraries('config_scripts', $task_path.'/'))
+	{
+	
+	
+		$climate->white()->backgroundRed()->out("Error: not found config_scripts.php in ${script_path}");
+	
+		return false;
+	
+	}
+	
+	//Little checking
+	
+	if(!isset(ConfigPanel::$scripts[$options['task']]))
+	{
+	
+		$climate->white()->backgroundRed()->out("Error, check your task because don't have any action");
+		
+		exit(1);
+	
+	}
+	
 	//Preparing SSH2
 
 	$key = new Crypt_RSA();
@@ -206,22 +233,7 @@ function exec_tasks($options, $host, $data_host, $key, $climate)
 	
 	$script_path=$script_base_path.'/';
 	
-	//Paths for task
-	
-	$task_base_path=ConfigPanel::$base_path.'/tasks';
-	
-	$task_path=$task_base_path.'/'.$options['task'];
-	
 	ConfigPanel::$logger->addInfo("Executing tasks with codename ${options['task']} in host ${host}...");
-	
-	if(!Utils::load_libraries('config_scripts', $task_path.'/'))
-	{
-	
-		ConfigPanel::$logger->addWarning("Error: not found config_scripts.php in ${script_path}");
-	
-		return false;
-	
-	}
 	
 	//Here you can load global parameters for this tasks.
 	
@@ -269,7 +281,6 @@ function exec_tasks($options, $host, $data_host, $key, $climate)
 	
 	#	die;
 	#}
-	
 	
 	foreach(ConfigPanel::$scripts[$options['task']] as $script_codename => $script_config)
 	{
