@@ -27,6 +27,8 @@ class ConfigPanel {
 	static public $port_shh=22;
 	
 	static public $logger;
+	
+	static public $exit_if_error=false;
 
 }
 
