@@ -38,6 +38,8 @@ class ConfigPanel {
 	
 	static public $num_errors=0;
 	
+	static public $num_success=0;
+	
 	static public $progress;
 
 }

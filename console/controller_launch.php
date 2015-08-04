@@ -39,7 +39,7 @@ function LaunchConsole()
 	
 	//Set predefinided default values for ConfigPanel class.
 	
-	ConfigPanel::$base_path=PhangoVar::$base_path.'/modules/spanel/scripts';
+	ConfigPanel::$base_path=PhangoVar::$base_path.'/modules/spanel';
 	
 	ConfigPanel::$logs_path=PhangoVar::$base_path.'/modules/spanel/logs';
 	
@@ -82,12 +82,16 @@ function LaunchConsole()
 	
 	$c_servers=count(ConfigPanel::$servers);
 	
-	$climate->white()->bold()->out('Welcome to Protozoo.');
+	$climate->white()->bold()->out('Welcome to Protozoo');
 	$climate->yellow()->out('Executing task <'.$options['task'].'> in '.$c_servers.' machines');
 	
 	$count_p=0;
 	
 	$arr_process=array();
+	
+	ConfigPanel::$progress = $climate->progress()->total($c_servers);
+	
+	ConfigPanel::$progress->current(0);
 	
 	foreach(ConfigPanel::$servers as $host => $data_host)
 	{
@@ -141,6 +145,8 @@ function LaunchConsole()
 	
 	check_process_wait($arr_process, $count_p, $climate);
 	
+	$climate->yellow()->bold()->out('Results: success:'.ConfigPanel::$num_success.', fails:'.ConfigPanel::$num_errors);
+	
 	$climate->white()->backgroundLightBlue()->out("Tasks on all servers were finished!!");
 	
 	/*if($z>0)
@@ -193,14 +199,22 @@ function exec_tasks($options, $host, $data_host, $key, $climate)
 	ConfigPanel::$logger->pushHandler($stream_handler);
 
 	//Execute the script. 
-		
-	$script_base_path=ConfigPanel::$base_path.'/'.$data_host['os_codename'];
 	
-	$script_path=$script_base_path.'/'.$options['task'];
+	//Paths for scripts
+	
+	$script_base_path=ConfigPanel::$base_path.'/scripts/'.$data_host['os_codename'];
+	
+	$script_path=$script_base_path.'/';
+	
+	//Paths for task
+	
+	$task_base_path=ConfigPanel::$base_path.'/tasks';
+	
+	$task_path=$task_base_path.'/'.$options['task'];
 	
 	ConfigPanel::$logger->addInfo("Executing tasks with codename ${options['task']} in host ${host}...");
 	
-	if(!Utils::load_libraries('config_scripts', $script_path.'/'))
+	if(!Utils::load_libraries('config_scripts', $task_path.'/'))
 	{
 	
 		ConfigPanel::$logger->addWarning("Error: not found config_scripts.php in ${script_path}");
@@ -493,6 +507,8 @@ function check_process($pid, $arr_process, $p_count, $climate)
 
 	//Delete process when end its journey...
 	
+	ConfigPanel::$progress->advance();
+	
 	$host=$arr_process[$pid];
 	
 	unset($arr_process[$pid]);
@@ -522,6 +538,14 @@ function check_process($pid, $arr_process, $p_count, $climate)
 				exit(1);
 				
 			}
+			
+			ConfigPanel::$num_errors++;
+		
+		}
+		else
+		{
+		
+			ConfigPanel::$num_success++;
 		
 		}
 	}
@@ -539,6 +563,8 @@ function check_process($pid, $arr_process, $p_count, $climate)
 			exit(1);
 			
 		}
+		
+		ConfigPanel::$num_errors++;
 	
 	}
 	
