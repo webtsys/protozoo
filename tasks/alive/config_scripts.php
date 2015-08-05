@@ -1,6 +1,6 @@
 <?php
 
-ConfigPanel::$scripts['alive']['alive']=array('name' => 'Sh Language', 'description' => 'Simple dummy script ', 'script_path' => 'libraries/dummy.sh', 'script_interpreter' => 'sh');
+ConfigPanel::$scripts['alive']['alive']=array('name' => 'Alive server', 'description' => 'Simple dummy script for check if connection exists in server', 'script_path' => 'libraries/dummy.sh', 'script_interpreter' => 'sh');
 
 
 ?>
