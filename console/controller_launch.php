@@ -16,7 +16,7 @@ include('Crypt/RSA.php');
 function LaunchConsole()
 {
 
-	Routes::$app='spanel';
+	Routes::$app='protozoo';
 
 	Utils::load_libraries('configpanel');
 
@@ -27,7 +27,7 @@ function LaunchConsole()
 	if(!isset($options['task']))
 	{
 		
-		$climate->white()->backgroundBlack()->out("Use: php console.php -m=spanel -c=launch --task=folder_task [--resume] [--profile=profile_name]");
+		$climate->white()->backgroundBlack()->out("Use: php console.php -m=protozoo -c=launch --task=folder_task [--resume] [--profile=profile_name]");
 		
 		die;
 	
@@ -39,9 +39,9 @@ function LaunchConsole()
 	
 	//Set predefinided default values for ConfigPanel class.
 	
-	ConfigPanel::$base_path=PhangoVar::$base_path.'/modules/spanel';
+	ConfigPanel::$base_path=PhangoVar::$base_path.'/modules/protozoo';
 	
-	ConfigPanel::$logs_path=PhangoVar::$base_path.'/modules/spanel/logs';
+	ConfigPanel::$logs_path=PhangoVar::$base_path.'/modules/protozoo/logs';
 	
 	ConfigPanel::$servers=array();
 	
@@ -58,7 +58,7 @@ function LaunchConsole()
 	
 	}
 	
-	Utils::load_config('spanel', $config_name);
+	Utils::load_config('protozoo', $config_name);
 	
 	//Paths for task
 	
@@ -189,9 +189,12 @@ function LaunchConsole()
 	
 	}*/
 	
-	/*$mem_usage=memory_get_usage();
+	/*$mem_usage=memory_get_usage(true);
 	
 	echo round($mem_usage/1048576,2)." megabytes"; */
+	
+	/*$pid = getmypid(); 
+	echo'MEMORY USAGE (% KB PID ): ' . `ps --pid $pid --no-headers -o%mem,rss,pid`; */
 
 }
 
@@ -239,11 +242,11 @@ function exec_tasks($options, $host, $data_host, $key, $climate)
 	
 	//need that reinclude config_parameters_ if overwrite
 	
-	Utils::reload_config('spanel', 'config_parameters_'.$options['task']);
+	Utils::reload_config('protozoo', 'config_parameters_'.$options['task']);
 	
 	//Here you can load particular parameters for this tasks in this server.
 	
-	Utils::load_config('spanel', 'config_parameters_'.$options['task'].'_'.$host);
+	Utils::load_config('protozoo', 'config_parameters_'.$options['task'].'_'.$host);
 	
 	//print_r(ConfigPanel::$scripts);
 	
@@ -481,10 +484,10 @@ function check_process_free($arr_process, $count_p)
 	{
 		foreach($arr_process as $pid => $host)
 		{
-		
+			
 			if(!posix_getpgid($pid))
 			{
-			
+				
 				list($arr_process, $p_count, $climate)=check_process($pid, $arr_process, $p_count, $climate);
 				
 				$wait=false;
