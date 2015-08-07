@@ -33,10 +33,6 @@ function LaunchConsole()
 	
 	}
 	
-	//Variable used for set the number of ssh process created. For future versiones.
-	
-	/*$ssh_limit=10;*/
-	
 	//Set predefinided default values for ConfigPanel class.
 	
 	ConfigPanel::$base_path=PhangoVar::$base_path.'/modules/protozoo';
@@ -48,6 +44,12 @@ function LaunchConsole()
 	ConfigPanel::$public_key=getenv('HOME').'/.ssh/id_rsa.pub';
 	
 	ConfigPanel::$private_key=getenv('HOME').'/.ssh/id_rsa';
+	
+	//Load global config with for example, ssh paswords.
+	
+	Utils::load_config('protozoo', 'config');
+	
+	//Load profile with servers
 	
 	$config_name='config_servers';
 	
