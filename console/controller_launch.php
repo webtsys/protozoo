@@ -88,17 +88,27 @@ function LaunchConsole()
 	}
 	
 	//Preparing SSH2
-
-	$key = new Crypt_RSA();
 	
-	if(ConfigPanel::$password_key!='')
+	/*if(ConfigPanel::$password_key!='')
 	{
 		
 		$key->setPassword(ConfigPanel::$password_key);
 		
-	}
+	}*/
 	
-	$key->loadKey(file_get_contents(ConfigPanel::$private_key));
+	/*if(!$key->loadKey(file_get_contents(ConfigPanel::$private_key)))
+	{
+	
+		echo "Password:";
+	
+		$password = fgets(STDIN);
+	
+		$climate->white()->backgroundRed()->out("Error, check the password of your ssh key");
+		exit(1);
+	
+	}*/
+	
+	$key=check_password_key(ConfigPanel::$password_key, $climate, $num_repeat=0);
 	
 	if(isset($options['servers']))
 	{
@@ -144,8 +154,8 @@ function LaunchConsole()
 			
 			if($count_p>=ConfigPanel::$ssh_instances)
 			{
-			
-				check_process_free($arr_process, $count_p);
+				
+				list($arr_process, $p_count, $climate)=check_process_free($arr_process, $count_p, $climate);
 			
 			}
 		
@@ -170,7 +180,7 @@ function LaunchConsole()
 	
 	}
 	
-	check_process_wait($arr_process, $count_p, $climate);
+	list($arr_process, $p_count, $climate)=check_process_wait($arr_process, $count_p, $climate);
 	
 	$climate->yellow()->bold()->out('Results: success:'.ConfigPanel::$num_success.', fails:'.ConfigPanel::$num_errors);
 	
@@ -475,29 +485,13 @@ function upload_sftp_file($sftp, $script_to_execute, $script_src)
 
 }
 
-function check_process_free($arr_process, $count_p)
+function check_process_free($arr_process, $p_count, $climate)
 {
-
-	$wait=true;
 	
-	while($wait==true)
-	{
-		foreach($arr_process as $pid => $host)
-		{
-			
-			if(!posix_getpgid($pid))
-			{
-				
-				list($arr_process, $p_count, $climate)=check_process($pid, $arr_process, $p_count, $climate);
-				
-				$wait=false;
-				
-			}
-		
-		}
-		
-	}
+	list($arr_process, $p_count, $climate)=check_process($arr_process, $p_count, $climate);
 
+	return [$arr_process, $p_count, $climate];
+	
 }
 
 //Wait to all processes to end
@@ -505,20 +499,23 @@ function check_process_free($arr_process, $count_p)
 function check_process_wait($arr_process, $p_count, $climate)
 {
 	
-	foreach($arr_process as $pid => $host)
+	foreach($arr_process as $process)
 	{
 	
-		list($arr_process, $p_count, $climate)=check_process($pid, $arr_process, $p_count, $climate);
+		list($arr_process, $p_count, $climate)=check_process($arr_process, $p_count, $climate);
+		
 	
 	}
+	
+	return [$arr_process, $p_count, $climate];
 
 }
 
-function check_process($pid, $arr_process, $p_count, $climate)
+function check_process($arr_process, $p_count, $climate)
 {
 
-	$result=pcntl_waitpid($pid,$status);
-
+	$pid=pcntl_waitpid(0,$status);
+	
 	//Delete process when end its journey...
 	
 	ConfigPanel::$progress->advance();
@@ -539,16 +536,18 @@ function check_process($pid, $arr_process, $p_count, $climate)
 		if(pcntl_wexitstatus($status))
 		{
 		
-			$climate->white()->backgroundRed()->out("Error: A error exists in server ".$host.". Please, see in the log for more info");
+			$climate->white()->backgroundRed()->out("Error: A error exists in server ".$host.". Please, see in the log for more info\n");
 			
 			//If defined die if error, use check_process_wait for wait to errors.
 			
 			if(ConfigPanel::$exit_if_error==true)
 			{
 
+				ConfigPanel::$num_errors++;
 				
 				list($arr_process, $p_count, $climate)=check_process_wait($arr_process, $p_count, $climate);
 				$climate->white()->backgroundRed()->out("You check get out of the program if error exists, stopping. All tasks before of error was finished");
+				$climate->yellow()->bold()->out('Results: success:'.ConfigPanel::$num_success.', fails:'.ConfigPanel::$num_errors);
 				exit(1);
 				
 			}
@@ -584,6 +583,59 @@ function check_process($pid, $arr_process, $p_count, $climate)
 	
 	
 	return [$arr_process, $p_count, $climate];
+
+}
+
+function check_password_key($password, $climate, $num_repeat=0)
+{
+	$key = new Crypt_RSA();
+	
+	$key->setPassword($password);
+	
+	if(!$key->loadKey(file_get_contents(ConfigPanel::$private_key)))
+	{
+	
+		if($num_repeat<3)
+		{
+	
+			//Horrible hack for obtain password 
+	
+			$fh = fopen('php://stdin','r');
+			
+			echo 'Password: ';
+			
+			`/bin/stty -echo`;
+			
+			$password = rtrim(fgets($fh,64));
+			
+			`/bin/stty echo`;
+			
+			print "\n";
+
+			// nothing more to read from the keyboard
+			fclose($fh);
+			
+			#$password = trim(fgets(STDIN));
+			
+			//$password=`read -s -p "Enter Password: " pass`;
+			
+			$num_repeat+=1;
+			
+			$key=check_password_key($password, $climate, $num_repeat);
+			
+		}
+		else
+		{
+		
+			$climate->white()->backgroundRed()->out("Error, check the password of your ssh key");
+			
+			exit(1);
+		
+		}
+	
+	}
+	
+	return $key;
 
 }
 
