@@ -91,25 +91,6 @@ function LaunchConsole()
 	
 	//Preparing SSH2
 	
-	/*if(ConfigPanel::$password_key!='')
-	{
-		
-		$key->setPassword(ConfigPanel::$password_key);
-		
-	}*/
-	
-	/*if(!$key->loadKey(file_get_contents(ConfigPanel::$private_key)))
-	{
-	
-		echo "Password:";
-	
-		$password = fgets(STDIN);
-	
-		$climate->white()->backgroundRed()->out("Error, check the password of your ssh key");
-		exit(1);
-	
-	}*/
-	
 	$key=check_password_key(ConfigPanel::$password_key, $climate, $num_repeat=0);
 	
 	if(isset($options['servers']))
@@ -188,19 +169,6 @@ function LaunchConsole()
 	
 	$climate->white()->backgroundLightBlue()->out("Tasks on all servers were finished!!");
 	
-	/*if($z>0)
-	{
-	
-		$climate->white()->backgroundLightBlue()->out("Tasks on all servers were finished!!");
-	
-	}
-	else
-	{
-	
-		$climate->white()->backgroundRed()->out("Profile ".$options['profile'].' not exists');
-	
-	}*/
-	
 	/*$mem_usage=memory_get_usage(true);
 	
 	echo round($mem_usage/1048576,2)." megabytes"; */
@@ -260,18 +228,6 @@ function exec_tasks($options, $host, $data_host, $key, $climate)
 	
 	Utils::load_config('protozoo', 'config_parameters_'.$options['task'].'_'.$host);
 	
-	//print_r(ConfigPanel::$scripts);
-	
-	//Example, i can create a script that install all libraries for my scripts first and after the scripts that use this libraries. After i can execute a script that clean all rubbish.
-	
-	//Array with scripts to copy.
-	
-	//Copy scripts with scp command. Save on log using monolog.
-	
-	//Execute ssh commands specified. Scp for copy. 
-	
-	//If error, stop. 
-	
 	//Prepare ssh session
 		
 	$sftp = new Net_SFTP($host);
@@ -287,15 +243,6 @@ function exec_tasks($options, $host, $data_host, $key, $climate)
 	}
 	
 	//Prepare sftp session
-		
-	#$sftp = new Net_SFTP($host);
-	
-	#if (!$sftp->login(ConfigPanel::$user_ssh, $key)) {
-	
-	#	ConfigPanel::$logger->addWarning("Error: cannot login on the server ".$host);
-	
-	#	die;
-	#}
 	
 	foreach(ConfigPanel::$scripts[$options['task']] as $script_codename => $script_config)
 	{
@@ -376,8 +323,6 @@ function exec_tasks($options, $host, $data_host, $key, $climate)
 		
 		}
 		
-		//$progress->current($total_count);
-		
 		if($c_files>1)
 		{
 			foreach($script_config['extra_files'] as $extra_file)
@@ -397,13 +342,8 @@ function exec_tasks($options, $host, $data_host, $key, $climate)
 					return false;
 				
 				}
-			
-				//Upload file
-				//if(!$sftp->put($script_to_execute, $extra_file, NET_SFTP_LOCAL_FILE))
 				
 				$total_count+=$sum_count;
-				
-				//$progress->current($total_count);
 			
 			}
 			
@@ -412,10 +352,6 @@ function exec_tasks($options, $host, $data_host, $key, $climate)
 		ConfigPanel::$logger->addInfo("Files were uploaded succesfully");
 		
 		$total_count=100;
-		
-		//$progress->current($total_count);
-		
-		#ConfigPanel::$logger->addInfo("You can see the progress on ".$log);
 		
 		//Create command to execute
 		
@@ -443,16 +379,6 @@ function exec_tasks($options, $host, $data_host, $key, $climate)
 		}
 		
 		ConfigPanel::$logger->addInfo("Task ".$script_config['name']." was finished succesfully!!!");
-
-		//Upload the script and the specified files to the tmp home in server, normally /tmp.
-		
-		//Run the script
-		
-		//If all fine, delete all files.
-		
-		//If not, show error in log and in screen. Stop script.
-		
-		//Resume option
 		
 	
 	}
@@ -465,7 +391,7 @@ function exec_tasks($options, $host, $data_host, $key, $climate)
 
 function packet_handler($str)
 {
-	//echo $str;
+	
 	ConfigPanel::$logger->addInfo($str);
 	
 	
@@ -616,10 +542,6 @@ function check_password_key($password, $climate, $num_repeat=0)
 
 			// nothing more to read from the keyboard
 			fclose($fh);
-			
-			#$password = trim(fgets(STDIN));
-			
-			//$password=`read -s -p "Enter Password: " pass`;
 			
 			$num_repeat+=1;
 			
